@@ -1,6 +1,7 @@
 #include <iostream>
 #include "./../ext/headers/args.hxx"
 #include "cpu.h"
+#include "rowhammer.h"
 
 using namespace dramsim3;
 
@@ -25,6 +26,12 @@ int main(int argc, const char **argv) {
         parser, "trace",
         "Trace file, setting this option will ignore -s option",
         {'t', "trace"});
+    args::ValueFlag<int> threshold_arg(parser, "threshold_arg_int", 
+                                                   "Bit Flip Threshold", 
+                                                   {"threshold"}, 300000);
+    args::ValueFlag<double> vuln_arg(parser, "vuln_arg_double", 
+                                                   "Vulnerability scalar", 
+                                                   {'v', "vuln"}, 0.0);
     args::Positional<std::string> config_arg(
         parser, "config", "The config file name (mandatory)");
 
@@ -49,6 +56,13 @@ int main(int argc, const char **argv) {
     std::string output_dir = args::get(output_dir_arg);
     std::string trace_file = args::get(trace_file_arg);
     std::string stream_type = args::get(stream_arg);
+
+    int bit_flip_threshold = args::get(threshold_arg);
+    double vulnerability_scalar = args::get(vuln_arg);
+
+    Rowhammer rh(config_file, trace_file, bit_flip_threshold, vulnerability_scalar);
+
+    rh.ParseTrace();
 
     CPU *cpu;
     if (!trace_file.empty()) {
