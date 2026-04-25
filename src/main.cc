@@ -29,9 +29,18 @@ int main(int argc, const char **argv) {
     args::ValueFlag<int> threshold_arg(parser, "threshold_arg_int", 
                                                    "Bit Flip Threshold", 
                                                    {"threshold"}, 300000);
+    args::ValueFlag<int> seed_arg(parser, "seed_arg_int", 
+                                                   "RNG seed. 0 = Random (default)", 
+                                                   {"seed"}, 0);
     args::ValueFlag<double> vuln_arg(parser, "vuln_arg_double", 
                                                    "Vulnerability scalar", 
                                                    {'v', "vuln"}, 0.0);
+    args::ValueFlag<unsigned int> trr_rows_arg(parser, "trr_rows_int", 
+                                                   "Number of rows to track for TRR. 0 = off.", 
+                                                   {"trr"}, 0);
+    args::ValueFlag<double> trr_ratio_arg(parser, "trr_ratio_double", 
+                                                   "Ratio of the threshold to activate trr at. Requires trr_rows > 0. Default is 0.5", 
+                                                   {"ratio"}, 0.5);
     args::Positional<std::string> config_arg(
         parser, "config", "The config file name (mandatory)");
 
@@ -59,8 +68,11 @@ int main(int argc, const char **argv) {
 
     int bit_flip_threshold = args::get(threshold_arg);
     double vulnerability_scalar = args::get(vuln_arg);
+    int seed = args::get(seed_arg);
+    unsigned int trr_rows = args::get(trr_rows_arg);
+    double trr_ratio = args::get(trr_ratio_arg);
 
-    Rowhammer rh(config_file, trace_file, bit_flip_threshold, vulnerability_scalar);
+    Rowhammer rh(config_file, output_dir, trace_file, bit_flip_threshold, vulnerability_scalar, seed, trr_rows, trr_ratio);
 
     rh.ParseTrace();
 
@@ -79,6 +91,8 @@ int main(int argc, const char **argv) {
         cpu->ClockTick();
     }
     cpu->PrintStats();
+
+    rh.PrintStats();
 
     delete cpu;
 

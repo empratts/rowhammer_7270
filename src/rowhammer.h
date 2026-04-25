@@ -10,14 +10,24 @@
 
 namespace dramsim3{
 
+typedef struct trr_track_{
+    unsigned int hit_count;
+    unsigned int last_updated;
+}TRR_Tracker;
+
 
     class Rowhammer{
         public:
-            Rowhammer(std::string config_in, std::string trace_in, unsigned int flip_threshold_in, double vuln_scalar_in);
+            Rowhammer(std::string config_in, std::string output_dir,
+                      std::string trace_in, unsigned int flip_threshold_in,
+                      double vuln_scalar_in, unsigned int seed,
+                      unsigned int trr_rows_in, double trr_ratio_in);
             ~Rowhammer();
             void ParseTrace();
             void HandleTransaction(unsigned int row, unsigned int clock_cycle);
             void CountFlips();
+            void TrackTRR(unsigned int row, unsigned int clock_cycle);
+            void PrintStats();
 
         protected:
             Config config_;
@@ -25,8 +35,14 @@ namespace dramsim3{
             unsigned int flip_threshold;
             double vuln_scalar;
             std::map<int, int> hits_;
+            std::map<int, TRR_Tracker> trr_table_;
             std::mt19937 generator;
             std::uniform_real_distribution<double> dist;
+            unsigned int targets;
+            unsigned int flips;
+            unsigned int trr_rows;
+            double trr_ratio;
+            unsigned int trr_count;
 
     };
 }

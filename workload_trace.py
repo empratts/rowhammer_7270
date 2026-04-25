@@ -6,10 +6,11 @@ def main():
     parser = argparse.ArgumentParser()
 
     parser.add_argument('-c', '--config', type=str, required=True, help="DRAM configuration file")
-    parser.add_argument('-n', '--hammer_count', type=int, default=30000, help="Number of times to hammer each victim")
-    parser.add_argument('-t', '--target_count', type=int, default=1, help="Number of rows to target")
+    parser.add_argument('-n', '--access_count', type=int, default=100000, help="Number of times to access memory")
+    parser.add_argument('-r', '--row_count', type=int, default=3000, help="Number of rows to spread accesses across")
+    parser.add_argument('-d', '--duration', type=int, default=1000000000, help="Duration of the trace (in ticks)")
+    parser.add_argument('-a', '--zipf_alpha', type=float, default=0.9, help="Zipfian distribution skew parameter")
     parser.add_argument('-o', '--output', type=str, default='./trace', help="Output file")
-    parser.add_argument('-s', '--seed', type=int, default=0, help="Seed for the RNG. 0 = random (default)")
     
     args = parser.parse_args()
 
@@ -40,7 +41,7 @@ def main():
     ranks = channel_size / megs_per_rank
 
     request_size_bytes = bus_width / 8 * BL
-    shift_bits = int(np.log2(request_size_bytes))
+    shift_bits = np.log2(request_size_bytes)
     col_low_bits = int(np.log2(BL))
     actual_col_bits = int(np.log2(columns)) - col_low_bits
 
@@ -78,36 +79,31 @@ def main():
     ro_mask = (1 << field_widths["ro"]) - 1
     co_mask = (1 << field_widths["co"]) - 1
 
-    if args.seed != 0:
-        rng = np.random.default_rng(args.seed)
-    else:
-        rng = np.random.default_rng()
 
-    if args.target_count > rows // 8:
-        tc = rows // 8
-    else:
-        tc = args.target_count
+    rng = np.random.default_rng()
 
-    victim_rows = rng.choice(rows // 8, size=tc, replace=False)
-    print(f"Generating trace hitting {tc} rows {args.hammer_count} times each.")
-    victim_columns = rng.integers(low=0, high=columns >> col_low_bits, size=args.hammer_count)
+    weights = np.array([1.0 / (i ** args.zipf_alpha) for i in range(1, args.row_count + 1)])
+    weights /= weights.sum()
+    access_rows = rng.choice(args.row_count, size=args.access_count, p=weights)
     clock = 0
+
+    access_spacing = args.duration / args.access_count
 
     outfile = open(args.output, 'w')
 
-    # For simplicity, the attack will target channel, rank, bg, and bank 0, only the row
+    # For simplicity, the accesses will target channel, rank, bg, and bank 0, only the row
     # and column will change 
-    for c in victim_columns:
-        for r in victim_rows:
-            rt = r * 8 + 4  #this is to prevent target rows from being adjacent
-            address = ((rt - 1) << (ro_pos + shift_bits)) | (c << (co_pos + shift_bits))
-            command = f'0x{address:08x} READ {clock}\n'
-            outfile.write(command)
+    for r in access_rows:
+        c = int(rng.random() * (columns >> col_low_bits))
+        address = (r << ro_pos) | (c << co_pos)
+        access_type = "READ"
+        if (rng.random() > 0.7):
+            access_type = "WRITE"
 
-            address = ((rt + 1) << (ro_pos + shift_bits)) | (c << (co_pos + shift_bits))
-            command = f'0x{address:08x} READ {clock + 1}\n'
-            outfile.write(command)
-            clock += hammer_spacing
+        command = f'0x{address:08x} {access_type} {int(clock)}\n'
+        outfile.write(command)
+
+        clock += access_spacing
 
 
 

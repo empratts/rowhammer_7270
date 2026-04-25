@@ -1,0 +1,19 @@
+MFG B
+
+dram4 old:
+- HCfirst - 30k
+- at 2xCHfirst - 1.7E-6
+
+dram4 new:
+- HCfirst - 25k
+- at 2xCHfirst 1E-5
+
+MFG A
+
+dram4 old:
+- HCfirst - 30k
+- at 2xCHfirst - 3e-6
+
+dram4 new:
+- HCfirst - 17k
+- at 2xCHfirst 4E-6
