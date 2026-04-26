@@ -107,7 +107,7 @@ def main():
             address = ((rt + 1) << (ro_pos + shift_bits)) | (c << (co_pos + shift_bits))
             command = f'0x{address:08x} READ {clock + 1}\n'
             outfile.write(command)
-            clock += hammer_spacing
+            clock += hammer_spacing * 3
 
 
 
