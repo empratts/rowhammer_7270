@@ -1,5 +1,5 @@
 # project files
-build/
+build/*
 debug_build/
 data/
 ext/SuperLU_MT_3.1/
@@ -14,7 +14,7 @@ release
 *.vh
 .vs/
 .venv/
-trace/
+trace/*
 
 # Compiled Object files
 *.slo
@@ -48,3 +48,4 @@ trace/
 
 # IDEs / Editors
 .vscode/
+!.gitkeep

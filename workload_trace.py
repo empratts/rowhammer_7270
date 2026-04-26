@@ -8,9 +8,10 @@ def main():
     parser.add_argument('-c', '--config', type=str, required=True, help="DRAM configuration file")
     parser.add_argument('-n', '--access_count', type=int, default=100000, help="Number of times to access memory")
     parser.add_argument('-r', '--row_count', type=int, default=3000, help="Number of rows to spread accesses across")
-    parser.add_argument('-d', '--duration', type=int, default=1000000000, help="Duration of the trace (in ticks)")
+    parser.add_argument('-d', '--duration', type=int, default=300000000, help="Duration of the trace (in ticks)")
     parser.add_argument('-a', '--zipf_alpha', type=float, default=0.9, help="Zipfian distribution skew parameter")
     parser.add_argument('-o', '--output', type=str, default='./trace', help="Output file")
+    parser.add_argument('-s', '--seed', type=int, default=0, help="RNG seed. 0 = random (default)")
     
     args = parser.parse_args()
 
@@ -80,7 +81,11 @@ def main():
     co_mask = (1 << field_widths["co"]) - 1
 
 
-    rng = np.random.default_rng()
+    if args.seed != 0:
+        rng = np.random.default_rng(args.seed)
+    else:
+        rng = np.random.default_rng()
+
 
     weights = np.array([1.0 / (i ** args.zipf_alpha) for i in range(1, args.row_count + 1)])
     weights /= weights.sum()
