@@ -43,6 +43,8 @@ typedef struct trr_track_{
             unsigned int trr_rows;
             double trr_ratio;
             unsigned int trr_count;
+            unsigned int last_refresh;
+            unsigned int refresh_interval;
 
     };
 }

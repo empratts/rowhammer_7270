@@ -87,7 +87,7 @@ int main(int argc, const char **argv) {
         }
     }
 
-    for (uint64_t clk = 0; clk < cycles; clk++) {
+    for (uint64_t clk = 0; clk < cycles || !cpu->Done(); clk++) {
         cpu->ClockTick();
     }
     cpu->PrintStats();

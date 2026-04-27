@@ -18,6 +18,7 @@ class CPU {
               std::bind(&CPU::WriteCallBack, this, std::placeholders::_1)),
           clk_(0) {}
     virtual void ClockTick() = 0;
+    virtual bool Done() = 0;
     void ReadCallBack(uint64_t addr) { return; }
     void WriteCallBack(uint64_t addr) { return; }
     void PrintStats() { memory_system_.PrintStats(); }
@@ -31,6 +32,7 @@ class RandomCPU : public CPU {
    public:
     using CPU::CPU;
     void ClockTick() override;
+    bool Done() override;
 
    private:
     uint64_t last_addr_;
@@ -43,6 +45,7 @@ class StreamCPU : public CPU {
    public:
     using CPU::CPU;
     void ClockTick() override;
+    bool Done() override;
 
    private:
     uint64_t addr_a_, addr_b_, addr_c_, offset_ = 0;
@@ -60,6 +63,7 @@ class TraceBasedCPU : public CPU {
                   const std::string& trace_file);
     ~TraceBasedCPU() { trace_file_.close(); }
     void ClockTick() override;
+    bool Done() override;
 
    private:
     std::ifstream trace_file_;

@@ -20,12 +20,17 @@ namespace dramsim3 {
       dist(0, 1),
       trr_rows(trr_rows_in),
       trr_ratio(trr_ratio_in),
-      trr_count(0)
+      trr_count(0),
+      last_refresh(0)
     {
         if (seed)
         {
             generator.seed(seed);
         }
+        refresh_interval = config_.tREFI * 8192; //7.6 microseconds * 8192 = 64 ms
+
+        std::cout << "Refresh interval: " << refresh_interval << "\n";
+
     }
     
     Rowhammer::~Rowhammer()
@@ -57,6 +62,14 @@ namespace dramsim3 {
 
     void Rowhammer::HandleTransaction(unsigned int row, unsigned int clock_cycle)
     {
+        // Periodic Refresh
+        if (clock_cycle - last_refresh > refresh_interval)
+        {
+
+            CountFlips();
+            hits_.clear();
+            last_refresh = clock_cycle;
+        }
         // reading from a row refreshes it, so set its hit count to 0
         if(hits_.find(row) != hits_.end())
         {

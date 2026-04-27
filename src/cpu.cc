@@ -19,6 +19,11 @@ void RandomCPU::ClockTick() {
     return;
 }
 
+bool RandomCPU::Done()
+{
+    return true;
+}
+
 void StreamCPU::ClockTick() {
     // stream-add, read 2 arrays, add them up to the third array
     // this is a very simple approximate but should be able to produce
@@ -59,6 +64,11 @@ void StreamCPU::ClockTick() {
     return;
 }
 
+bool StreamCPU::Done()
+{
+    return true;
+}
+
 TraceBasedCPU::TraceBasedCPU(const std::string& config_file,
                              const std::string& output_dir,
                              const std::string& trace_file)
@@ -87,6 +97,15 @@ void TraceBasedCPU::ClockTick() {
     }
     clk_++;
     return;
+}
+
+bool TraceBasedCPU::Done()
+{
+    if(trace_file_.eof())
+    {
+        return true;
+    }
+    return false;
 }
 
 }  // namespace dramsim3

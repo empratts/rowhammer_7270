@@ -97,8 +97,8 @@ def main():
 
     # For simplicity, the attack will target channel, rank, bg, and bank 0, only the row
     # and column will change 
-    for c in victim_columns:
-        for r in victim_rows:
+    for r in victim_rows:
+        for c in victim_columns:
             rt = r * 8 + 4  #this is to prevent target rows from being adjacent
             address = ((rt - 1) << (ro_pos + shift_bits)) | (c << (co_pos + shift_bits))
             command = f'0x{address:08x} READ {clock}\n'
