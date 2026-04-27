@@ -29,8 +29,6 @@ namespace dramsim3 {
         }
         refresh_interval = config_.tREFI * 8192; //7.6 microseconds * 8192 = 64 ms
 
-        std::cout << "Refresh interval: " << refresh_interval << "\n";
-
     }
     
     Rowhammer::~Rowhammer()
@@ -45,8 +43,8 @@ namespace dramsim3 {
         uint64_t address_int;
         Address address;
 
-        std::cout << "Rowhammer processing trace with flip threshold " << flip_threshold << ", vulnerability scalar " << vuln_scalar
-                  <<", trr_rows " << trr_rows << ", and trr_ratio " << trr_ratio << "\n";
+        // std::cout << "Rowhammer processing trace with flip threshold " << flip_threshold << ", vulnerability scalar " << vuln_scalar
+        //           <<", trr_rows " << trr_rows << ", and trr_ratio " << trr_ratio << "\n";
 
         while(trace_file_ >> address_string >> command >> clock_cycle)
         {
@@ -144,7 +142,7 @@ namespace dramsim3 {
 
     void Rowhammer::CountFlips()
     {
-        std::cout << "Counting flips...\n";
+        // std::cout << "Counting flips...\n";
         double P_Flip = 0;
         flips = 0;
         targets = 0;
@@ -161,7 +159,7 @@ namespace dramsim3 {
                 }
             }
         }
-        std::cout << flips << " of " << targets << " flipped. " << (double)(flips)* 100.0 / (double) targets << "%\n";
+        // std::cout << flips << " of " << targets << " flipped. " << (double)(flips)* 100.0 / (double) targets << "%\n";
     }
 
     void Rowhammer::PrintStats()
