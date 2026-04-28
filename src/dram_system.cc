@@ -50,7 +50,7 @@ void BaseDRAMSystem::PrintEpochStats() {
     return;
 }
 
-void BaseDRAMSystem::PrintStats() {
+void BaseDRAMSystem::PrintStats(unsigned int flips, unsigned int trr) {
     // Finish epoch output, remove last comma and append ]
     std::ofstream epoch_out(config_.json_epoch_name, std::ios_base::in |
                                                          std::ios_base::out |
@@ -65,7 +65,7 @@ void BaseDRAMSystem::PrintStats() {
     // close it now so that each channel can handle it
     json_out.close();
     for (size_t i = 0; i < ctrls_.size(); i++) {
-        ctrls_[i]->PrintFinalStats();
+        ctrls_[i]->PrintFinalStats(flips, trr);
         if (i != ctrls_.size() - 1) {
             std::ofstream chan_out(config_.json_stats_name, std::ofstream::app);
             chan_out << "," << std::endl;

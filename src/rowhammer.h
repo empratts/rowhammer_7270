@@ -28,6 +28,8 @@ typedef struct trr_track_{
             void CountFlips();
             void TrackTRR(unsigned int row, unsigned int clock_cycle);
             void PrintStats();
+            unsigned int GetFlips() { return flips;}
+            unsigned int GetTRRCount() { return trr_count;}
 
         protected:
             Config config_;

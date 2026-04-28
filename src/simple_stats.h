@@ -37,7 +37,7 @@ class SimpleStats {
     void PrintEpochStats();
 
     // Final statas output
-    void PrintFinalStats();
+    void PrintFinalStats(unsigned int flips, unsigned int trr);
 
     // Reset (usually after one phase of simulation)
     void Reset();
@@ -60,7 +60,7 @@ class SimpleStats {
     double GetHistoAvg(const HistoCount& histo_counts) const;
     std::string GetTextHeader(bool is_final) const;
     void UpdateEpochStats();
-    void UpdateFinalStats();
+    void UpdateFinalStats(unsigned int flips, unsigned int trr);
 
     const Config& config_;
     int channel_id_;

@@ -291,8 +291,8 @@ void Controller::PrintEpochStats() {
     return;
 }
 
-void Controller::PrintFinalStats() {
-    simple_stats_.PrintFinalStats();
+void Controller::PrintFinalStats(unsigned int flips, unsigned int trr) {
+    simple_stats_.PrintFinalStats(flips, trr);
 
 #ifdef THERMAL
     for (int r = 0; r < config_.ranks; r++) {

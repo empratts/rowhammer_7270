@@ -90,9 +90,10 @@ int main(int argc, const char **argv) {
     for (uint64_t clk = 0; clk < cycles || !cpu->Done(); clk++) {
         cpu->ClockTick();
     }
-    cpu->PrintStats();
 
-    rh.PrintStats();
+    cpu->PrintStats(rh.GetFlips(), rh.GetTRRCount());
+
+    // rh.PrintStats();
 
     delete cpu;
 

@@ -37,9 +37,12 @@ SimpleStats::SimpleStats(const Config& config, int channel_id)
     InitStat("num_srefe_cmds", "counter", "Number of SREFE commands");
     InitStat("num_srefx_cmds", "counter", "Number of SREFX commands");
     InitStat("hbm_dual_cmds", "counter", "Number of cycles dual cmds issued");
+    InitStat("num_trr_cmds", "counter", "Number of TRR commands issued");
+    InitStat("flips", "counter", "Number of Rowhammer flips observed");
 
     // double stats
     InitStat("act_energy", "double", "Activation energy");
+    InitStat("trr_energy", "double", "TRR energy");
     InitStat("read_energy", "double", "Read energy");
     InitStat("write_energy", "double", "Write energy");
     InitStat("ref_energy", "double", "Refresh energy");
@@ -120,8 +123,8 @@ void SimpleStats::PrintEpochStats() {
     print_pairs_.clear();
 }
 
-void SimpleStats::PrintFinalStats() {
-    UpdateFinalStats();
+void SimpleStats::PrintFinalStats(unsigned int flips, unsigned int trr) {
+    UpdateFinalStats(flips, trr);
 
     if (config_.output_level >= 0) {
         std::ofstream j_out(config_.json_stats_name, std::ofstream::app);
@@ -423,8 +426,10 @@ void SimpleStats::UpdateEpochStats() {
     return;
 }
 
-void SimpleStats::UpdateFinalStats() {
+void SimpleStats::UpdateFinalStats(unsigned int flips, unsigned int trr) {
     UpdateCounters();
+    counters_["flips"] = flips;
+    counters_["num_trr_cmds"] = trr;
 
     // update computed stats
     doubles_["act_energy"] = counters_["num_act_cmds"] * config_.act_energy_inc;
@@ -433,8 +438,10 @@ void SimpleStats::UpdateFinalStats() {
     doubles_["write_energy"] =
         counters_["num_write_cmds"] * config_.write_energy_inc;
     doubles_["ref_energy"] = counters_["num_ref_cmds"] * config_.ref_energy_inc;
+    doubles_["trr_energy"] = counters_["num_trr_cmds"] * config_.ref_energy_inc;
     doubles_["refb_energy"] =
         counters_["num_refb_cmds"] * config_.refb_energy_inc;
+    
 
     // vector doubles, update first, then push
     double background_energy = 0.0;
@@ -463,7 +470,7 @@ void SimpleStats::UpdateFinalStats() {
 
     double total_energy = doubles_["act_energy"] + doubles_["read_energy"] +
                           doubles_["write_energy"] + doubles_["ref_energy"] +
-                          doubles_["refb_energy"] + background_energy;
+                          doubles_["refb_energy"] + background_energy + doubles_["trr_energy"];
     calculated_["total_energy"] = total_energy;
     calculated_["average_power"] = total_energy / counters_["num_cycles"];
     // calculated_["average_read_latency"] = GetHistoAvg("read_latency");
