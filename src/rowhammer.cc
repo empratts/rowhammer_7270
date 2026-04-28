@@ -21,6 +21,8 @@ namespace dramsim3 {
       trr_rows(trr_rows_in),
       trr_ratio(trr_ratio_in),
       trr_count(0),
+      targets(0),
+      flips(0),
       last_refresh(0)
     {
         if (seed)
@@ -144,21 +146,23 @@ namespace dramsim3 {
     {
         // std::cout << "Counting flips...\n";
         double P_Flip = 0;
-        flips = 0;
-        targets = 0;
+        unsigned int local_flips = 0;
+        unsigned int local_targets = 0;
         for (auto i: hits_)
         {
             P_Flip = 1.0 - std::exp((double)(-1 * vuln_scalar * std::max(0, (int)(i.second - (flip_threshold * 2))))); //Factor of 2 accounts for double sided hammering
 
             if (P_Flip > .001)
             {
-                targets++;
+                local_targets++;
                 if (dist(generator) < P_Flip)
                 {
-                    flips++;
+                    local_flips++;
                 }
             }
         }
+        flips += local_flips;
+        targets += local_targets;
         // std::cout << flips << " of " << targets << " flipped. " << (double)(flips)* 100.0 / (double) targets << "%\n";
     }
 

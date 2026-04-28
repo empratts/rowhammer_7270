@@ -38,11 +38,11 @@ typedef struct trr_track_{
             std::map<int, TRR_Tracker> trr_table_;
             std::mt19937 generator;
             std::uniform_real_distribution<double> dist;
-            unsigned int targets;
-            unsigned int flips;
             unsigned int trr_rows;
             double trr_ratio;
             unsigned int trr_count;
+            unsigned int targets;
+            unsigned int flips;
             unsigned int last_refresh;
             unsigned int refresh_interval;
 
