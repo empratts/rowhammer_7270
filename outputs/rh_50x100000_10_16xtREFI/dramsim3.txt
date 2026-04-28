@@ -77,5 +77,5 @@ total_energy                   =    2.348e+12   # Total energy (pJ)
 average_power                  =      3557.57   # Average power (mW)
 average_bandwidth              =       1.5392   # Average bandwidth
 Rowhammer processing trace with flip threshold 25000 and vulnerability scalar 1.63841e-06
-0 of 0 flipped. -nan%
+8 of 101 flipped. 7.92079%
 TRR activated 0 times. Using 0 pJ. (Not included in total enrgy above)%
