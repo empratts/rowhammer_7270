@@ -1,6 +1,8 @@
 ###########################################
 ## Statistics of Channel 0
 ###########################################
+flips                          =            8   # Number of Rowhammer flips observed
+num_trr_cmds                   =            0   # Number of TRR commands issued
 num_srefx_cmds                 =            0   # Number of SREFX commands
 num_srefe_cmds                 =            0   # Number of SREFE commands
 num_refb_cmds                  =            0   # Number of REFb commands
@@ -64,6 +66,7 @@ ref_energy                     =  3.60274e+11   # Refresh energy
 refb_energy                    =           -0   # Refresh-bank energy
 write_energy                   =            0   # Write energy
 read_energy                    =  1.76718e+10   # Read energy
+trr_energy                     =            0   # TRR energy
 act_energy                     =  1.21042e+10   # Activation energy
 sref_energy.0                  =            0   # SREF energy rank.0
 sref_energy.1                  =            0   # SREF energy rank.1
@@ -76,6 +79,3 @@ average_interarrival           =           66   # Average request interarrival l
 total_energy                   =  5.96257e+11   # Total energy (pJ)
 average_power                  =      2258.55   # Average power (mW)
 average_bandwidth              =       1.5392   # Average bandwidth
-Rowhammer processing trace with flip threshold 25000 and vulnerability scalar 1.63841e-06
-5 of 73 flipped. 6.84932%
-TRR activated 0 times. Using 0 pJ. (Not included in total enrgy above)%
