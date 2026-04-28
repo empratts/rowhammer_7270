@@ -11,7 +11,8 @@ for hc in "${hammers[@]}"; do
             echo "Starting Pass - Refresh: ${rf}, Hammers: ${hits}, Rows: ${r}"
             for sd in "${seeds[@]}"; do
                 mkdir -p "./outputs/rh_${r}x${hits}_${sd}_${rf}xtREFI"
-                ./build/dramsim3main ./configs/DDR4_8Gb_x8_3200_${rf}xREFI.ini --vuln 1.638408e-6 --seed "${sd}" -t "./trace/rh_${r}x${hits}_${sd}_trace" -o "./outputs/rh_${r}x${hits}_${sd}_${rf}xtREFI" --threshold 25000 &
+                ./build/dramsim3main ./configs/DDR4_8Gb_x8_3200_${rf}xREFI.ini --vuln 3.276816384e-6 --seed "${sd}" -t "./trace/rh_${r}x${hits}_${sd}_trace" -o "./outputs/rh_${r}x${hits}_${sd}_${rf}xtREFI" --threshold 25000 &
+                
             done
             wait
         done

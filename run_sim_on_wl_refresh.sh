@@ -7,16 +7,16 @@ trr_rows=150
 
 for sd in "${seeds[@]}"; do
     mkdir -p "./outputs/wl_${sd}"
-    ./build/dramsim3main ./configs/DDR4_8Gb_x8_3200.ini --vuln 1.638408e-6 --seed "${sd}" -t "./trace/wl_${sd}_trace" -o "./outputs/wl_${sd}" --threshold 25000 &
+    ./build/dramsim3main ./configs/DDR4_8Gb_x8_3200.ini --vuln 3.276816384e-6 --seed "${sd}" -t "./trace/wl_${sd}_trace" -o "./outputs/wl_${sd}" --threshold 25000 &
     # Run again with TRR on
     mkdir -p "./outputs/wl_${sd}_trr"
-    ./build/dramsim3main ./configs/DDR4_8Gb_x8_3200.ini --vuln 1.638408e-6 --seed "${sd}" -t "./trace/wl_${sd}_trace" -o "./outputs/wl_${sd}_trr" --threshold 25000 --trr ${trr_rows} --ratio 0.25 &
+    ./build/dramsim3main ./configs/DDR4_8Gb_x8_3200.ini --vuln 3.276816384e-6 --seed "${sd}" -t "./trace/wl_${sd}_trace" -o "./outputs/wl_${sd}_trr" --threshold 25000 --trr ${trr_rows} --ratio 0.25 &
 done
 wait
 for rf in "${refresh[@]}"; do
     for sd in "${seeds[@]}"; do
         mkdir -p "./outputs/wl_${sd}_${rf}xtREFI"
-        ./build/dramsim3main ./configs/DDR4_8Gb_x8_3200_${rf}xREFI.ini --vuln 1.638408e-6 --seed "${sd}" -t "./trace/wl_${sd}_trace" -o "./outputs/wl_${sd}_${rf}xtREFI" --threshold 25000 &
+        ./build/dramsim3main ./configs/DDR4_8Gb_x8_3200_${rf}xREFI.ini --vuln 3.276816384e-6 --seed "${sd}" -t "./trace/wl_${sd}_trace" -o "./outputs/wl_${sd}_${rf}xtREFI" --threshold 25000 &
     done
     wait
 done
