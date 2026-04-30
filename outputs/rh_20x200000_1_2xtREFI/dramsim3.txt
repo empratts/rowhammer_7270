@@ -1,6 +1,9 @@
 ###########################################
 ## Statistics of Channel 0
 ###########################################
+num_ecc_undetectable           =            0   # Number of Rowhammer flips undetectable by ECC
+num_ecc_detectable_uncorrectable =            0   # Number of Rowhammer flips detectable but uncorrectable by ECC
+num_ecc_correctable            =            0   # Number of Rowhammer flips correctable by ECC
 flips                          =           23   # Number of Rowhammer flips observed
 num_trr_cmds                   =            0   # Number of TRR commands issued
 num_srefx_cmds                 =            0   # Number of SREFX commands

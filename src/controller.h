@@ -33,7 +33,8 @@ class Controller {
     int QueueUsage() const;
     // Stats output
     void PrintEpochStats();
-    void PrintFinalStats(unsigned int flips, unsigned int trr);
+    void PrintFinalStats(unsigned int flips, unsigned int trr, unsigned int ecc_correctable,
+                    unsigned int ecc_detectable_uncorrectable, unsigned int ecc_undetectable);
     void ResetStats() { simple_stats_.Reset(); }
     std::pair<uint64_t, int> ReturnDoneTrans(uint64_t clock);
 

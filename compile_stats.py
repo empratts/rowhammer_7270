@@ -5,7 +5,7 @@ import json
 output = open("stats.csv", 'w')
 
 output.write("Raw RH Runs\n")
-output.write(f'Rows,Hits,Seed,Flips,TRR Commands,Total Energy,Refresh Energy,TRR Energy,Write Energy,Read Energy,Activation Energy,Average Read Latency\n')
+output.write(f'Rows,Hits,Seed,Flips,Flip %,TRR Commands,Total Energy,Refresh Energy,TRR Energy,Write Energy,Read Energy,Activation Energy,Average Read Latency\n')
 for p in Path("./outputs/").iterdir():
     m = re.match(r"rh_(\d{2})x(\d+)_(\d+)$",p.name)
     if m:
@@ -14,11 +14,11 @@ for p in Path("./outputs/").iterdir():
         hits = int(m.group(2))
         stats_file = open(p / 'dramsim3.json')
         stats = json.load(stats_file)['0']
-        output.write(f'{rows},{hits},{seed},{stats["flips"]},{stats["num_trr_cmds"]},{stats["total_energy"]},{stats["ref_energy"]},{stats["trr_energy"]},{stats["write_energy"]},{stats["read_energy"]},{stats["act_energy"]},{stats["average_read_latency"]}\n')
+        output.write(f'{rows},{hits},{seed},{stats["flips"]},{stats["flips"]/rows},{stats["num_trr_cmds"]},{stats["total_energy"]},{stats["ref_energy"]},{stats["trr_energy"]},{stats["write_energy"]},{stats["read_energy"]},{stats["act_energy"]},{stats["average_read_latency"]}\n')
 
 
 output.write("\nRH Runs with TRR\n")
-output.write(f'Rows,Hits,Seed,Flips,TRR Commands,Total Energy,Refresh Energy,TRR Energy,Write Energy,Read Energy,Activation Energy,Average Read Latency\n')
+output.write(f'Rows,Hits,Seed,Flips,Flip %,TRR Commands,Total Energy,Refresh Energy,TRR Energy,Write Energy,Read Energy,Activation Energy,Average Read Latency\n')
 for p in Path("./outputs/").iterdir():
     m = re.match(r"rh_(\d{2})x(\d+)_(\d+)_trr$",p.name)
     if m:
@@ -27,11 +27,11 @@ for p in Path("./outputs/").iterdir():
         hits = int(m.group(2))
         stats_file = open(p / 'dramsim3.json')
         stats = json.load(stats_file)['0']
-        output.write(f'{rows},{hits},{seed},{stats["flips"]},{stats["num_trr_cmds"]},{stats["total_energy"]},{stats["ref_energy"]},{stats["trr_energy"]},{stats["write_energy"]},{stats["read_energy"]},{stats["act_energy"]},{stats["average_read_latency"]}\n')
+        output.write(f'{rows},{hits},{seed},{stats["flips"]},{stats["flips"]/rows},{stats["num_trr_cmds"]},{stats["total_energy"]},{stats["ref_energy"]},{stats["trr_energy"]},{stats["write_energy"]},{stats["read_energy"]},{stats["act_energy"]},{stats["average_read_latency"]}\n')
 
 
 output.write("\nRH Runs with Increased Refresh Rate\n")
-output.write(f'Rows,Hits,Seed,Refresh Multiplier,Flips,TRR Commands,Total Energy,Refresh Energy,TRR Energy,Write Energy,Read Energy,Activation Energy,Average Read Latency\n')
+output.write(f'Rows,Hits,Seed,Refresh Multiplier,Flips,Flip%,TRR Commands,Total Energy,Refresh Energy,TRR Energy,Write Energy,Read Energy,Activation Energy,Average Read Latency\n')
 for p in Path("./outputs/").iterdir():
     m = re.match(r"rh_(\d{2})x(\d+)_(\d+)_(\d+)xtREFI$",p.name)
     if m:
@@ -41,7 +41,20 @@ for p in Path("./outputs/").iterdir():
         refresh_multi = int(m.group(4))
         stats_file = open(p / 'dramsim3.json')
         stats = json.load(stats_file)['0']
-        output.write(f'{rows},{hits},{seed},{refresh_multi},{stats["flips"]},{stats["num_trr_cmds"]},{stats["total_energy"]},{stats["ref_energy"]},{stats["trr_energy"]},{stats["write_energy"]},{stats["read_energy"]},{stats["act_energy"]},{stats["average_read_latency"]}\n')
+        output.write(f'{rows},{hits},{seed},{refresh_multi},{stats["flips"]},{stats["flips"]/rows},{stats["num_trr_cmds"]},{stats["total_energy"]},{stats["ref_energy"]},{stats["trr_energy"]},{stats["write_energy"]},{stats["read_energy"]},{stats["act_energy"]},{stats["average_read_latency"]}\n')
+
+
+output.write("\nECC RH Runs\n")
+output.write(f'Rows,Hits,Seed,ECC Correctable,ECC Detectable,ECC Undetectable,TRR Commands,Total Energy,Refresh Energy,TRR Energy,Write Energy,Read Energy,Activation Energy,Average Read Latency\n')
+for p in Path("./outputs/").iterdir():
+    m = re.match(r"rh_(\d{2})x(\d+)_(\d+)_ecc$",p.name)
+    if m:
+        seed = int(m.group(3))
+        rows = int(m.group(1))
+        hits = int(m.group(2))
+        stats_file = open(p / 'dramsim3.json')
+        stats = json.load(stats_file)['0']
+        output.write(f'{rows},{hits},{seed},{stats["num_ecc_correctable"]},{stats["num_ecc_detectable_uncorrectable"]},{stats["num_ecc_undetectable"]},{stats["num_trr_cmds"]},{stats["total_energy"]},{stats["ref_energy"]},{stats["trr_energy"]},{stats["write_energy"]},{stats["read_energy"]},{stats["act_energy"]},{stats["average_read_latency"]}\n')
 
 
 output.write("\nRaw Workload Runs\n")

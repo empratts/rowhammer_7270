@@ -11,7 +11,7 @@ namespace dramsim3 {
     Rowhammer::Rowhammer(std::string config_in, std::string output_dir,
                          std::string trace_in, unsigned int flip_threshold_in,
                          double vuln_scalar_in, unsigned int seed,
-                         unsigned int trr_rows_in, double trr_ratio_in)
+                         unsigned int trr_rows_in, double trr_ratio_in, bool ecc_in)
     : config_(config_in, output_dir),
       trace_file_(trace_in),
       flip_threshold(flip_threshold_in),
@@ -23,7 +23,11 @@ namespace dramsim3 {
       trr_count(0),
       targets(0),
       flips(0),
-      last_refresh(0)
+      last_refresh(0),
+      ecc(ecc_in),
+      ecc_correctable(0),
+      ecc_detectable_uncorrectable(0),
+      ecc_undetectable(0)
     {
         if (seed)
         {
@@ -144,35 +148,72 @@ namespace dramsim3 {
 
     void Rowhammer::CountFlips()
     {
-        // std::cout << "Counting flips...\n";
-        double P_Flip = 0;
-        unsigned int local_flips = 0;
-        unsigned int local_targets = 0;
-        for (auto i: hits_)
+        if (!ecc)
         {
-            P_Flip = 1.0 - std::exp((double)(-1 * vuln_scalar * std::max(0, (int)(i.second - (flip_threshold * 2))))); //Factor of 2 accounts for double sided hammering
-
-            if (P_Flip > .001)
+            double P_Flip = 0;
+            unsigned int local_flips = 0;
+            unsigned int local_targets = 0;
+            for (auto i: hits_)
             {
-                local_targets++;
-                if (dist(generator) < P_Flip)
+                P_Flip = 1.0 - std::exp((double)(-1 * vuln_scalar * std::max(0, (int)(i.second - (flip_threshold * 2))))); //Factor of 2 accounts for double sided hammering
+
+                if (P_Flip > .001)
                 {
-                    local_flips++;
+                    local_targets++;
+                    if (dist(generator) < P_Flip)
+                    {
+                        local_flips++;
+                    }
                 }
             }
+            flips += local_flips;
+            targets += local_targets;
         }
-        flips += local_flips;
-        targets += local_targets;
-        // std::cout << flips << " of " << targets << " flipped. " << (double)(flips)* 100.0 / (double) targets << "%\n";
+        else
+        {
+            for (auto i: hits_)
+            {
+                // This computes the probability for a single bit to flip
+                double P_individual_bit_flips = 1 - std::exp((double)(-1 * (vuln_scalar / 8192) * std::max(0, (int)(i.second - (flip_threshold * 2)))));
+                // std::cout << "Chance of a single bit flipping: " << P_individual_bit_flips << "\n";
+                // A row consists of 128 words
+                for (int j = 0; j < 128; j++)
+                {
+                    // A word consists of 64 bits + 1 ecc bit
+                    int flip_count_in_word = 0;
+                    for (int k = 0; k < 65; k++)
+                    {
+                        if (dist(generator) < P_individual_bit_flips)
+                        {
+                            // std::cout << "Bit Flipped: \n";
+                            flip_count_in_word++;
+                        }
+                    }
+
+                    switch (flip_count_in_word) {
+                        case 0:
+                            break;
+                        case 1:
+                            ecc_correctable++;
+                            break;
+                        case 2:
+                            ecc_detectable_uncorrectable++;
+                            break;
+                        default:
+                            ecc_undetectable++;
+                            break;
+                    }
+                }
+            }
+
+        }
     }
 
     void Rowhammer::PrintStats()
     {
-        double trr_energy = trr_count * config_.ref_energy_inc;
-        std::ofstream txt_out(config_.txt_stats_name, std::ofstream::app);
-        txt_out << "Rowhammer processing trace with flip threshold " << flip_threshold << " and vulnerability scalar " << vuln_scalar << "\n";
-        txt_out << flips << " of " << targets << " flipped. " << (double)(flips)* 100.0 / (double) targets << "%\n";
-        txt_out << "TRR activated " << trr_count << " times. Using " << trr_energy << " pJ. (Not included in total enrgy above)%\n";
-        txt_out.close();
+        std::cout << "ECC_corr: \n" << ecc_correctable << "\n";
+        std::cout << "ECC_det: \n" << ecc_detectable_uncorrectable << "\n";
+        std::cout << "ECC_undet: \n" << ecc_undetectable << "\n";
+        
     }
 }

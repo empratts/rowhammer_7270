@@ -41,6 +41,9 @@ int main(int argc, const char **argv) {
     args::ValueFlag<double> trr_ratio_arg(parser, "trr_ratio_double", 
                                                    "Ratio of the threshold to activate trr at. Requires trr_rows > 0. Default is 0.5", 
                                                    {"ratio"}, 0.5);
+    args::ValueFlag<bool> ecc_arg(parser, "ecc_bool", 
+                                                   "Enable Error Correcting Code mitigation.", 
+                                                   {"ecc"}, false);
     args::Positional<std::string> config_arg(
         parser, "config", "The config file name (mandatory)");
 
@@ -71,11 +74,13 @@ int main(int argc, const char **argv) {
     int seed = args::get(seed_arg);
     unsigned int trr_rows = args::get(trr_rows_arg);
     double trr_ratio = args::get(trr_ratio_arg);
+    bool ecc_on = args::get(ecc_arg);
 
-    Rowhammer rh(config_file, output_dir, trace_file, bit_flip_threshold, vulnerability_scalar, seed, trr_rows, trr_ratio);
+    Rowhammer rh(config_file, output_dir, trace_file, bit_flip_threshold, vulnerability_scalar, seed, trr_rows, trr_ratio, ecc_on);
 
     rh.ParseTrace();
 
+    // rh.PrintStats();
     CPU *cpu;
     if (!trace_file.empty()) {
         cpu = new TraceBasedCPU(config_file, output_dir, trace_file);
@@ -91,9 +96,8 @@ int main(int argc, const char **argv) {
         cpu->ClockTick();
     }
 
-    cpu->PrintStats(rh.GetFlips(), rh.GetTRRCount());
+    cpu->PrintStats(rh.GetFlips(), rh.GetTRRCount(), rh.GetECCCorrectable(), rh.GetECCDetectable(), rh.GetECCUndetectable());
 
-    // rh.PrintStats();
 
     delete cpu;
 

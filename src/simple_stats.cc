@@ -39,6 +39,9 @@ SimpleStats::SimpleStats(const Config& config, int channel_id)
     InitStat("hbm_dual_cmds", "counter", "Number of cycles dual cmds issued");
     InitStat("num_trr_cmds", "counter", "Number of TRR commands issued");
     InitStat("flips", "counter", "Number of Rowhammer flips observed");
+    InitStat("num_ecc_correctable", "counter", "Number of Rowhammer flips correctable by ECC");
+    InitStat("num_ecc_detectable_uncorrectable", "counter", "Number of Rowhammer flips detectable but uncorrectable by ECC");
+    InitStat("num_ecc_undetectable", "counter", "Number of Rowhammer flips undetectable by ECC");
 
     // double stats
     InitStat("act_energy", "double", "Activation energy");
@@ -123,8 +126,9 @@ void SimpleStats::PrintEpochStats() {
     print_pairs_.clear();
 }
 
-void SimpleStats::PrintFinalStats(unsigned int flips, unsigned int trr) {
-    UpdateFinalStats(flips, trr);
+void SimpleStats::PrintFinalStats(unsigned int flips, unsigned int trr, unsigned int ecc_correctable,
+                    unsigned int ecc_detectable_uncorrectable, unsigned int ecc_undetectable) {
+    UpdateFinalStats(flips, trr, ecc_correctable, ecc_detectable_uncorrectable, ecc_undetectable);
 
     if (config_.output_level >= 0) {
         std::ofstream j_out(config_.json_stats_name, std::ofstream::app);
@@ -426,10 +430,15 @@ void SimpleStats::UpdateEpochStats() {
     return;
 }
 
-void SimpleStats::UpdateFinalStats(unsigned int flips, unsigned int trr) {
+void SimpleStats::UpdateFinalStats(unsigned int flips, unsigned int trr, unsigned int ecc_correctable,
+                    unsigned int ecc_detectable_uncorrectable, unsigned int ecc_undetectable) {
     UpdateCounters();
     counters_["flips"] = flips;
     counters_["num_trr_cmds"] = trr;
+
+    counters_["num_ecc_correctable"] = ecc_correctable;
+    counters_["num_ecc_detectable_uncorrectable"] = ecc_detectable_uncorrectable;
+    counters_["num_ecc_undetectable"] = ecc_undetectable;
 
     // update computed stats
     doubles_["act_energy"] = counters_["num_act_cmds"] * config_.act_energy_inc;

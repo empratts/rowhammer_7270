@@ -21,7 +21,9 @@ class CPU {
     virtual bool Done() = 0;
     void ReadCallBack(uint64_t addr) { return; }
     void WriteCallBack(uint64_t addr) { return; }
-    void PrintStats(unsigned int flips, unsigned int trr) { memory_system_.PrintStats(flips, trr); }
+    void PrintStats(unsigned int flips, unsigned int trr, unsigned int ecc_correctable,
+                    unsigned int ecc_detectable_uncorrectable, unsigned int ecc_undetectable)
+                    { memory_system_.PrintStats(flips, trr, ecc_correctable, ecc_detectable_uncorrectable, ecc_undetectable); }
 
    protected:
     MemorySystem memory_system_;

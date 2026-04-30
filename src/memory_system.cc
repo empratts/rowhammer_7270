@@ -46,7 +46,8 @@ bool MemorySystem::AddTransaction(uint64_t hex_addr, bool is_write) {
     return dram_system_->AddTransaction(hex_addr, is_write);
 }
 
-void MemorySystem::PrintStats(unsigned int flips, unsigned int trr) const { dram_system_->PrintStats(flips, trr); }
+void MemorySystem::PrintStats(unsigned int flips, unsigned int trr, unsigned int ecc_correctable,
+                    unsigned int ecc_detectable_uncorrectable, unsigned int ecc_undetectable) const { dram_system_->PrintStats(flips, trr, ecc_correctable, ecc_detectable_uncorrectable, ecc_undetectable); }
 
 void MemorySystem::ResetStats() { dram_system_->ResetStats(); }
 

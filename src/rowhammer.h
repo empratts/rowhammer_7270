@@ -21,7 +21,7 @@ typedef struct trr_track_{
             Rowhammer(std::string config_in, std::string output_dir,
                       std::string trace_in, unsigned int flip_threshold_in,
                       double vuln_scalar_in, unsigned int seed,
-                      unsigned int trr_rows_in, double trr_ratio_in);
+                      unsigned int trr_rows_in, double trr_ratio_in, bool ecc_in);
             ~Rowhammer();
             void ParseTrace();
             void HandleTransaction(unsigned int row, unsigned int clock_cycle);
@@ -30,6 +30,9 @@ typedef struct trr_track_{
             void PrintStats();
             unsigned int GetFlips() { return flips;}
             unsigned int GetTRRCount() { return trr_count;}
+            unsigned int GetECCCorrectable() { return ecc_correctable;}
+            unsigned int GetECCDetectable() { return ecc_detectable_uncorrectable;}
+            unsigned int GetECCUndetectable() { return ecc_undetectable;}
 
         protected:
             Config config_;
@@ -47,6 +50,10 @@ typedef struct trr_track_{
             unsigned int flips;
             unsigned int last_refresh;
             unsigned int refresh_interval;
+            bool ecc;
+            unsigned int ecc_correctable;
+            unsigned int ecc_detectable_uncorrectable;
+            unsigned int ecc_undetectable;
 
     };
 }
